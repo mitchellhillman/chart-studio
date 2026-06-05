@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bar chart — iteration tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700;6..72,800&display=swap" rel="stylesheet" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "IBM Plex Sans", sans-serif;
+        margin: 20px;
+      }
+      input,
+      textarea,
+      select,
+      button {
+        font-family: "IBM Plex Sans", sans-serif;
+        font-size: 1rem;
+      }
+      label {
+        font-weight: 700;
+        display: block;
+        margin: 0 0 0.5rem 0;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        align-items: start;
+        margin: 20px 0;
+      }
+      .card {
+        padding: 20px;
+        border: 1px solid #000;
+        position: sticky;
+        top: 20px;
+      }
+      .controls {
+        width: 480px;
+      }
+      .controls div {
+        margin: 1rem 0;
+      }
+      .controls > div:first-child {
+        margin-top: 0;
+      }
+      input,
+      textarea {
+        display: block;
+        width: 100%;
+      }
+      input[type="checkbox"] {
+        display: inline-block;
+        width: auto;
+      }
+      .checkbox-label {
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .color-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .series-color {
+        width: 48px;
+        padding: 0;
+        border: 1px solid #000;
+        flex: 0 0 auto;
+      }
+      .series-color-hex {
+        flex: 1;
+      }
+      #color-pickers > div {
+        margin: 1rem 0;
+      }
+      #input-bar-gap,
+      #input-tick-count,
+      #input-max-labels,
+      #input-line-width,
+      #input-width,
+      #input-plot-height {
+        width: 6em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <div class="card">
+        <div id="chart"></div>
+      </div>
+      <div class="controls">
+      <div class="toolbar">
+        <button id="copy">Copy SVG</button>
+        <button id="download">Download .svg</button>
+        <button id="save-json">Save JSON</button>
+        <button id="load-json">Load JSON</button>
+        <button id="reset">Reset</button>
+        <input id="load-json-input" type="file" accept="application/json,.json" hidden />
+        <span class="status" id="status"></span>
+      </div>
+      <div>
+        <label for="input-type">Chart type</label>
+        <select id="input-type">
+          <option value="bar">Bar</option>
+          <option value="line">Line</option>
+        </select>
+      </div>
+      <div>
+        <label for="input-orientation">Orientation</label>
+        <select id="input-orientation">
+          <option value="vertical">Vertical</option>
+          <option value="horizontal">Horizontal</option>
+        </select>
+      </div>
+      <div>
+        <label for="input-bar-gap">Bar gap (px)</label>
+        <input type="number" id="input-bar-gap" min="0" max="100" step="1" />
+      </div>
+      <div>
+        <label for="input-tick-count">Ticks</label>
+        <input type="number" id="input-tick-count" min="2" max="20" step="1" />
+      </div>
+      <div>
+        <label for="input-max-labels">Axis labels shown (0 = all, min first + last)</label>
+        <input type="number" id="input-max-labels" min="0" max="200" step="1" />
+      </div>
+      <div>
+        <label class="checkbox-label" for="input-show-dots">
+          <input type="checkbox" id="input-show-dots" />
+          Show data point dots (line charts)
+        </label>
+      </div>
+      <div>
+        <label for="input-line-width">Line thickness (px)</label>
+        <input type="number" id="input-line-width" min="0.5" max="12" step="0.5" />
+      </div>
+      <div>
+        <label class="checkbox-label" for="input-show-legend">
+          <input type="checkbox" id="input-show-legend" />
+          Show legend
+        </label>
+      </div>
+      <div>
+        <label for="input-legend-position">Legend position</label>
+        <select id="input-legend-position">
+          <option value="top-left">Top left</option>
+          <option value="top-right">Top right</option>
+          <option value="bottom-left">Bottom left</option>
+          <option value="bottom-right">Bottom right</option>
+        </select>
+      </div>
+      <div>
+        <label for="input-width">Chart width (px)</label>
+        <input type="number" id="input-width" min="100" max="2000" step="10" />
+      </div>
+      <div>
+        <label for="input-plot-height">Plot height (px)</label>
+        <input type="number" id="input-plot-height" min="50" max="2000" step="10" />
+      </div>
+      <div>
+        <label for="input-title">Title</label>
+        <input type="text" id="input-title" />
+      </div>
+      <div>
+        <label for="input-subtitle">Subtitle</label>
+        <input type="text" id="input-subtitle" />
+      </div>
+      <div>
+        <label for="input-source">Source (one line per row)</label>
+        <textarea id="input-source" rows="4"></textarea>
+      </div>
+      <div id="color-pickers"></div>
+      <div>
+        <label for="input-data-mode">Data input</label>
+        <select id="input-data-mode">
+          <option value="paste">Paste</option>
+          <option value="file">Upload file</option>
+        </select>
+      </div>
+      <div id="data-paste-wrapper">
+        <label for="input-data">Data (CSV or TSV)</label>
+        <textarea id="input-data" rows="12"></textarea>
+      </div>
+      <div id="data-file-wrapper" hidden>
+        <label for="input-data-file">CSV file</label>
+        <input type="file" id="input-data-file" accept=".csv,.tsv,text/csv,text/tab-separated-values" />
+      </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script type="module" src="./bar-chart.js"></script>
+  </body>
+</html>
