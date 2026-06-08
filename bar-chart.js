@@ -28,6 +28,9 @@ const config = {
 
 const DEFAULT_PALETTE = ["#363537", "#0cce6b", "#dced31"];
 const AUTOSAVE_KEY = "barchart:autosave";
+// Reserved column name for per-row bar/dot colors. Holds a hex value
+// (with or without the leading "#"); excluded from the numeric series.
+const COLOR_KEY = "color";
 
 let dataText;
 const restored = restoreState();
@@ -50,6 +53,13 @@ function measureMaxTextWidth(labels, cfg, weight = 400) {
   return Math.max(...labels.map(s => ctx.measureText(s).width));
 }
 
+function normalizeHex(s) {
+  const v = (s ?? "").trim();
+  if (!v) return null;
+  const withHash = v.startsWith("#") ? v : "#" + v;
+  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(withHash) ? withHash : null;
+}
+
 function parseData(text) {
   const firstLine = text.split("\n").find(l => l.trim().length > 0) ?? "";
   const delim = firstLine.includes("\t") ? "\t" : ",";
@@ -57,6 +67,10 @@ function parseData(text) {
     const row = { label: d.label };
     for (const key of Object.keys(d)) {
       if (key === "label") continue;
+      if (key.toLowerCase() === COLOR_KEY) {
+        row.color = normalizeHex(d[key]);
+        continue;
+      }
       const v = d[key];
       row[key] = v === "" || v == null ? null : +v;
     }
@@ -66,7 +80,7 @@ function parseData(text) {
 
 function getSeries(rows) {
   if (!rows.length) return [];
-  return Object.keys(rows[0]).filter(k => k !== "label");
+  return Object.keys(rows[0]).filter(k => k !== "label" && k !== "color");
 }
 
 function thinLabels(rows, cfg) {
@@ -283,7 +297,7 @@ function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
             .attr("cx", d => x(d.label) + x.bandwidth() / 2)
             .attr("cy", d => y(d[s]))
             .attr("r", 4)
-            .attr("fill", cfg.colors[s]);
+            .attr("fill", d => d.color || cfg.colors[s]);
       }
     }
   } else {
@@ -296,7 +310,7 @@ function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
           .attr("y", d => y(d[1]))
           .attr("width", x.bandwidth())
           .attr("height", d => Math.max(0, y(d[0]) - y(d[1])))
-          .attr("fill", cfg.colors[seriesData.key]);
+          .attr("fill", d => d.data.color || cfg.colors[seriesData.key]);
     }
   }
 
@@ -431,7 +445,7 @@ function drawHorizontal(svg, rows, cfg, availableWidth, innerHeight) {
             .attr("cx", d => x(d[s]))
             .attr("cy", d => y(d.label) + y.bandwidth() / 2)
             .attr("r", 4)
-            .attr("fill", cfg.colors[s]);
+            .attr("fill", d => d.color || cfg.colors[s]);
       }
     }
   } else {
@@ -444,7 +458,7 @@ function drawHorizontal(svg, rows, cfg, availableWidth, innerHeight) {
           .attr("y", d => y(d.data.label))
           .attr("width", d => Math.max(0, x(d[1]) - x(d[0])))
           .attr("height", y.bandwidth())
-          .attr("fill", cfg.colors[seriesData.key]);
+          .attr("fill", d => d.data.color || cfg.colors[seriesData.key]);
     }
   }
 
@@ -659,9 +673,24 @@ function wireInputs() {
   });
 }
 
+function hasColorColumn(rows) {
+  return !!rows?.columns?.some(c => c.toLowerCase() === COLOR_KEY);
+}
+
 function renderColorPickers() {
   const container = document.getElementById("color-pickers");
   container.innerHTML = "";
+
+  // When the data supplies a per-row `color` column it fully controls
+  // each bar/dot, so the per-series pickers are moot — hide them.
+  if (hasColorColumn(data)) {
+    const note = document.createElement("p");
+    note.className = "color-note";
+    note.textContent = "Colors are set per row by the data’s “color” column.";
+    container.appendChild(note);
+    return;
+  }
+
   const series = getSeries(data);
   ensureColors(series, config);
 

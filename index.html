@@ -83,6 +83,11 @@
       #color-pickers > div {
         margin: 1rem 0;
       }
+      #color-pickers .color-note {
+        margin: 1rem 0;
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
       #input-bar-gap,
       #input-tick-count,
       #input-max-labels,
@@ -199,6 +204,14 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <script type="module" src="./bar-chart.js"></script>
+    <script>
+      // Cache-bust local assets per second so a reload always fetches the
+      // latest edits (page CSS is inline, so only the JS needs this).
+      const v = Math.floor(Date.now() / 1000);
+      const s = document.createElement("script");
+      s.type = "module";
+      s.src = "./bar-chart.js?v=" + v;
+      document.body.appendChild(s);
+    </script>
   </body>
 </html>

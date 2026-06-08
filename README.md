@@ -30,3 +30,16 @@ Stop the server with `Ctrl+C`.
 | `bar-chart.js` | Chart engine: rendering, parsing, config, SVG export, save/load |
 | `data.csv` | Default dataset loaded on first visit |
 | `data/` | Additional sample datasets |
+
+## Per-row colors
+
+Add a reserved `color` column to give each row (bar/category) its own
+color, overriding the per-series palette. Values are hex, with or
+without the leading `#`. Rows that leave it blank fall back to the
+series color.
+
+```csv
+label,KIA,color
+Operation Overlord — D-Day (Jun 1944),4414,#4b69aa
+Okinawa (Apr 1945),12520,#ed4e51
+```
