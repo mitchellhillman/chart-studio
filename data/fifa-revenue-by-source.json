@@ -8,17 +8,19 @@
       "*Budget"
     ],
     "colors": {
-      "Broadcasting rights": "#f1585c",
-      "Hospitality and ticket sales": "#a8a9ae",
-      "Marketing rights": "#4369aa",
-      "Licensing and other": "#585a5f"
+      "Broadcasting rights": "#E3120B",
+      "Hospitality and ticket sales": "#F4A39E",
+      "Marketing rights": "#7E9DC9",
+      "Licensing and other": "#3B4BA0"
     },
+    "backgroundColor": "#ffffff",
+    "legendBackground": "#f5f5f5",
     "chartType": "bar",
     "orientation": "horizontal",
     "dataInputMode": "file",
     "dataFileName": "fifa-revenue-by-source.csv",
-    "width": 700,
-    "plotHeight": 300,
+    "width": 500,
+    "plotHeight": 250,
     "marginTop": 64,
     "marginRight": 0,
     "marginLeft": 0,

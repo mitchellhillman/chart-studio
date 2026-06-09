@@ -7,12 +7,14 @@ const config = {
     "Sources: WorldCupGuide.com; FIFA",
   ],
   colors: {},
+  backgroundColor: "#ffffff",
+  legendBackground: "#f5f5f5",
   chartType: "bar",
   orientation: "vertical",
   dataInputMode: "paste",
   dataFileName: "",
-  width: 400,
-  plotHeight: 232,
+  width: 500,
+  plotHeight: 250,
   marginTop: 64,
   marginRight: 0,
   marginLeft: 0,
@@ -171,15 +173,18 @@ function render(rows, cfg) {
   const series = getSeries(rows);
   ensureColors(series, cfg);
 
-  const totalHeight = cfg.marginTop + cfg.plotHeight + marginBottom;
+  const pad = 24;
+  const contentHeight = cfg.marginTop + cfg.plotHeight + marginBottom;
+  const totalWidth = cfg.width + pad * 2;
+  const totalHeight = contentHeight + pad * 2;
 
   const container = document.getElementById("chart");
   container.innerHTML = "";
 
   const svg = d3.create("svg")
     .attr("xmlns", "http://www.w3.org/2000/svg")
-    .attr("viewBox", `0 0 ${cfg.width} ${totalHeight}`)
-    .attr("width", cfg.width)
+    .attr("viewBox", `0 0 ${totalWidth} ${totalHeight}`)
+    .attr("width", totalWidth)
     .attr("height", totalHeight)
     .attr("font-family", cfg.fontFamily)
     .attr("font-size", 14)
@@ -187,7 +192,16 @@ function render(rows, cfg) {
 
   svg.append("title").text(cfg.title);
 
-  svg.append("text")
+  svg.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", totalWidth)
+    .attr("height", totalHeight)
+    .attr("fill", cfg.backgroundColor || "#ffffff");
+
+  const root = svg.append("g").attr("transform", `translate(${pad}, ${pad})`);
+
+  root.append("text")
     .attr("x", 0)
     .attr("y", 18)
     .attr("font-size", 18)
@@ -195,7 +209,7 @@ function render(rows, cfg) {
     .attr("fill", "#000")
     .text(cfg.title);
 
-  svg.append("text")
+  root.append("text")
     .attr("x", 0)
     .attr("y", 38)
     .attr("font-size", 14)
@@ -207,16 +221,16 @@ function render(rows, cfg) {
   const innerHeight = cfg.plotHeight;
 
   if (cfg.orientation === "horizontal") {
-    drawHorizontal(svg, rows, cfg, availableWidth, innerHeight);
+    drawHorizontal(root, rows, cfg, availableWidth, innerHeight);
   } else {
-    drawVertical(svg, rows, cfg, availableWidth, innerHeight);
+    drawVertical(root, rows, cfg, availableWidth, innerHeight);
   }
 
   if (cfg.showLegend !== false && series.length) {
-    drawLegend(svg, series, cfg, availableWidth, innerHeight);
+    drawLegend(root, series, cfg, availableWidth, innerHeight);
   }
 
-  svg.append("g")
+  root.append("g")
     .selectAll("text.source")
     .data(sourceLines)
     .join("text")
@@ -231,7 +245,7 @@ function render(rows, cfg) {
 }
 
 function drawLegend(svg, series, cfg, availableWidth, innerHeight) {
-  const pad = 8;       // inset from the plot edge
+  const pad = 0;       // flush to the plot corner
   const innerPad = 6;  // padding inside the legend box
   const swatch = 11;
   const gap = 6;
@@ -254,12 +268,14 @@ function drawLegend(svg, series, cfg, availableWidth, innerHeight) {
     .attr("class", "legend")
     .attr("transform", `translate(${gx}, ${gy})`);
 
-  g.append("rect")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", boxW)
-    .attr("height", boxH)
-    .attr("fill", "#fff");
+  if (cfg.legendBackground) {
+    g.append("rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", boxW)
+      .attr("height", boxH)
+      .attr("fill", cfg.legendBackground);
+  }
 
   series.forEach((s, i) => {
     const ly = innerPad + i * rowH;
@@ -595,6 +611,12 @@ function syncInputsFromState() {
   document.getElementById("input-title").value = config.title;
   document.getElementById("input-subtitle").value = config.subtitle;
   document.getElementById("input-source").value = Array.isArray(config.source) ? config.source.join("\n") : config.source;
+  const bg = config.backgroundColor || "";
+  document.getElementById("input-bg-color").value = bg || "#ffffff";
+  document.getElementById("input-bg-color-hex").value = bg;
+  const legBg = config.legendBackground || "";
+  document.getElementById("input-legend-bg").value = legBg || "#ffffff";
+  document.getElementById("input-legend-bg-hex").value = legBg;
   document.getElementById("input-data").value = dataText;
   const mode = config.dataInputMode ?? "paste";
   document.getElementById("input-data-mode").value = mode;
@@ -697,6 +719,38 @@ function wireInputs() {
   });
   document.getElementById("input-source").addEventListener("input", (e) => {
     config.source = e.target.value.split("\n");
+    render(data, config);
+    persistState();
+  });
+  const bgColorInput = document.getElementById("input-bg-color");
+  const bgHexInput = document.getElementById("input-bg-color-hex");
+  bgColorInput.addEventListener("input", (e) => {
+    config.backgroundColor = e.target.value;
+    bgHexInput.value = e.target.value;
+    render(data, config);
+    persistState();
+  });
+  bgHexInput.addEventListener("input", (e) => {
+    const v = e.target.value.trim();
+    if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) return;
+    config.backgroundColor = v;
+    bgColorInput.value = v;
+    render(data, config);
+    persistState();
+  });
+  const legendBgInput = document.getElementById("input-legend-bg");
+  const legendBgHexInput = document.getElementById("input-legend-bg-hex");
+  legendBgInput.addEventListener("input", (e) => {
+    config.legendBackground = e.target.value;
+    legendBgHexInput.value = e.target.value;
+    render(data, config);
+    persistState();
+  });
+  legendBgHexInput.addEventListener("input", (e) => {
+    const v = e.target.value.trim();
+    if (v && !/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) return;
+    config.legendBackground = v;
+    if (v) legendBgInput.value = v;
     render(data, config);
     persistState();
   });

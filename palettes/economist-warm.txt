@@ -1,0 +1,23 @@
+Economist Warm
+Palette extracted from The Economist's warm-paper chart graphics
+(cream background, red/coral heat scale, grey neutrals).
+
+Accent red           #E3120B
+Coral (light red)    #F4A582
+Light grey           #C2C2C2
+Dark grey            #575757
+Ink (titles, text)   #1A1A1A
+Caption grey         #8A8A8A
+Gridline grey        #CFCABF
+Paper (warm cream)   #E9E4DA
+
+Series colors (red, coral, light grey, dark grey):
+Hex:    E3120B, F4A582, C2C2C2, 575757
+With #: #E3120B, #F4A582, #C2C2C2, #575757
+Array:  ["E3120B","F4A582","C2C2C2","575757"]
+
+Full set:
+Hex:    E3120B, F4A582, C2C2C2, 575757, 1A1A1A, 8A8A8A, CFCABF, E9E4DA
+With #: #E3120B, #F4A582, #C2C2C2, #575757, #1A1A1A, #8A8A8A, #CFCABF, #E9E4DA
+Array:  ["E3120B","F4A582","C2C2C2","575757","1A1A1A","8A8A8A","CFCABF","E9E4DA"]
+Object: {"Accent red":"E3120B","Coral":"F4A582","Light grey":"C2C2C2","Dark grey":"575757","Ink":"1A1A1A","Caption":"8A8A8A","Gridline":"CFCABF","Paper":"E9E4DA"}

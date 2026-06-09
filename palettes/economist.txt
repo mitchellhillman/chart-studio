@@ -1,0 +1,22 @@
+Economist
+Palette extracted from The Economist chart graphics.
+
+Accent / broadcasting red   #E3120B
+Salmon (light red)          #F4A39E
+Slate blue                  #7E9DC9
+Navy                        #3B4BA0
+Ink (titles, text)          #121212
+Gridline grey               #C9CDD2
+Caption grey                #8A8A8A
+Paper (background)          #FFFFFF
+
+Series colors (red, salmon, slate, navy):
+Hex:    E3120B, F4A39E, 7E9DC9, 3B4BA0
+With #: #E3120B, #F4A39E, #7E9DC9, #3B4BA0
+Array:  ["E3120B","F4A39E","7E9DC9","3B4BA0"]
+
+Full set:
+Hex:    E3120B, F4A39E, 7E9DC9, 3B4BA0, 121212, C9CDD2, 8A8A8A, FFFFFF
+With #: #E3120B, #F4A39E, #7E9DC9, #3B4BA0, #121212, #C9CDD2, #8A8A8A, #FFFFFF
+Array:  ["E3120B","F4A39E","7E9DC9","3B4BA0","121212","C9CDD2","8A8A8A","FFFFFF"]
+Object: {"Accent red":"E3120B","Salmon":"F4A39E","Slate blue":"7E9DC9","Navy":"3B4BA0","Ink":"121212","Gridline":"C9CDD2","Caption":"8A8A8A","Paper":"FFFFFF"}
