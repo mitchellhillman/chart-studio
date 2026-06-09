@@ -31,6 +31,21 @@
         margin: 20px;
         color: var(--ink);
       }
+      .app-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 9px 20px;
+        background: var(--panel);
+      }
+      .app-title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
       input,
       textarea,
       select,
@@ -45,7 +60,7 @@
         justify-content: start;
         gap: 28px;
         align-items: start;
-        margin: 20px 0;
+        margin: 44px 0 20px 0;
       }
 
       /* Chart "scale window": white inset in a light metal frame */
@@ -60,7 +75,7 @@
         flex-direction: column;
         gap: 12px;
         position: sticky;
-        top: 20px;
+        top: 70px;
       }
 
       /* Braun control panel */
@@ -370,6 +385,9 @@
     </style>
   </head>
   <body>
+    <header class="app-bar">
+      <h1 class="app-title">Chart Studio</h1>
+    </header>
     <div class="layout">
       <div class="stage">
         <div class="card">
