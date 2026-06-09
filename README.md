@@ -1,8 +1,8 @@
-# chart-maker
+# chart-studio
 
 A browser-based bar/line chart iteration tool built with [D3](https://d3js.org/). Paste in CSV/TSV data, tweak the configuration, and export a clean SVG. Work autosaves to `localStorage`, and full chart state (data + config) can be saved to and loaded from JSON.
 
-**Live version:** https://mitchellhillman.github.io/chart-maker/
+**Live version:** https://mitchellhillman.github.io/chart-studio/
 
 ## Running locally
 
