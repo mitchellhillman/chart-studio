@@ -18,6 +18,7 @@
         --tick: #9aa0a6;
         --red: #f1585c;
         --amber: #d99a16;
+        --blue: #4369aa;
         --radius: 3px;
         --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -29,7 +30,6 @@
         font-family: var(--sans);
         margin: 20px;
         color: var(--ink);
-        background: #e7e9ea;
       }
       input,
       textarea,
@@ -50,11 +50,10 @@
 
       /* Chart "scale window": white inset in a light metal frame */
       .card {
-        padding: 18px;
+        padding: 36px;
         background: #fff;
         border: 1px solid var(--line);
         border-radius: var(--radius);
-        box-shadow: 0 1px 2px rgba(33, 28, 32, 0.06), 0 6px 18px rgba(33, 28, 32, 0.08);
       }
       .stage {
         display: flex;
@@ -68,15 +67,10 @@
       .controls {
         order: -1;
         width: 380px;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        box-shadow: 0 1px 2px rgba(33, 28, 32, 0.06), 0 6px 18px rgba(33, 28, 32, 0.08);
-        overflow: hidden;
       }
 
       .group {
-        padding: 14px 16px;
+        padding: 14px 0;
         border-top: 1px solid var(--line);
       }
       .group:first-of-type {
@@ -256,10 +250,9 @@
         height: 18px;
         flex: 0 0 auto;
         border-radius: 50%;
-        background: radial-gradient(circle at 50% 38%, #fbfbfc, #dfe2e4);
+        background: #f4f4f5;
         border: 1px solid var(--tick);
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9),
-          0 1px 1px rgba(33, 28, 32, 0.15);
+        box-shadow: none;
         padding: 0;
         cursor: pointer;
         position: relative;
@@ -273,9 +266,8 @@
         opacity: 0.4;
       }
       input[type="checkbox"]:checked::after {
-        background: var(--amber);
+        background: var(--blue);
         opacity: 1;
-        box-shadow: 0 0 4px rgba(217, 154, 22, 0.8);
       }
       input[type="checkbox"]:focus-visible {
         outline: none;
@@ -296,22 +288,19 @@
         padding: 10px;
       }
       button {
-        padding: 6px 11px;
-        background: linear-gradient(to bottom, #fdfdfd, #e9ebec);
-        border: 1px solid var(--tick);
-        border-radius: var(--radius);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9),
-          0 1px 1px rgba(33, 28, 32, 0.12);
+        padding: 6px 12px;
+        background: #f4f4f5;
+        border: 1px solid var(--line);
+        border-radius: 7px;
         font-size: 0.72rem;
         letter-spacing: 0.02em;
         cursor: pointer;
       }
       button:hover {
-        background: linear-gradient(to bottom, #ffffff, #eef0f1);
+        background: #e9ebec;
       }
       button:active {
-        background: #e4e6e7;
-        box-shadow: inset 0 1px 3px rgba(33, 28, 32, 0.2);
+        background: #dfe2e4;
       }
       button:focus-visible {
         outline: none;
@@ -341,10 +330,9 @@
         height: 26px;
         flex: 0 0 auto;
         padding: 0;
-        border: 1px solid var(--tick);
-        border-radius: 50%;
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6),
-          0 1px 1px rgba(33, 28, 32, 0.15);
+        border: none;
+        border-radius: 6px;
+        box-shadow: none;
         overflow: hidden;
         cursor: pointer;
       }
@@ -353,7 +341,11 @@
       }
       .series-color::-webkit-color-swatch {
         border: none;
-        border-radius: 50%;
+        border-radius: 6px;
+      }
+      .series-color::-moz-color-swatch {
+        border: none;
+        border-radius: 6px;
       }
       .series-color-hex {
         flex: 1;
@@ -369,6 +361,11 @@
         margin: 0 0 8px 0;
         color: var(--muted);
         font-size: 0.72rem;
+      }
+      .help {
+        margin: 5px 0 0 0;
+        color: var(--faint);
+        font-size: 0.68rem;
       }
     </style>
   </head>
@@ -488,8 +485,9 @@
             <input type="number" id="input-tick-count" min="2" max="20" step="1" />
           </div>
           <div class="field field--num">
-            <label for="input-max-labels">Axis labels shown (0 = all, min first + last)</label>
+            <label for="input-max-labels">Axis labels shown</label>
             <input type="number" id="input-max-labels" min="0" max="200" step="1" />
+            <p class="help">0 = all, min first + last</p>
           </div>
           <div class="field">
             <label for="input-tick-label-format">Tick date format (d3 time spec, e.g. %Y; blank = raw)</label>
