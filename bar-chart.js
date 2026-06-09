@@ -583,7 +583,9 @@ function syncInputsFromState() {
   document.getElementById("input-show-legend").checked = config.showLegend !== false;
   document.getElementById("input-legend-position").value = config.legendPosition || "top-left";
   document.getElementById("input-width").value = config.width;
+  document.getElementById("input-width-range").value = config.width;
   document.getElementById("input-plot-height").value = config.plotHeight;
+  document.getElementById("input-plot-height-range").value = config.plotHeight;
   document.getElementById("input-title").value = config.title;
   document.getElementById("input-subtitle").value = config.subtitle;
   document.getElementById("input-source").value = Array.isArray(config.source) ? config.source.join("\n") : config.source;
@@ -594,6 +596,21 @@ function syncInputsFromState() {
   document.getElementById("data-file-wrapper").hidden = mode !== "file";
   updateLoadedFilename();
   renderColorPickers();
+}
+
+function wireDimension(numberId, rangeId, key) {
+  const numberEl = document.getElementById(numberId);
+  const rangeEl = document.getElementById(rangeId);
+  const apply = (raw, counterpart) => {
+    const v = parseInt(raw, 10);
+    if (isNaN(v) || v < 1) return;
+    config[key] = v;
+    counterpart.value = v;
+    render(data, config);
+    persistState();
+  };
+  numberEl.addEventListener("input", (e) => apply(e.target.value, rangeEl));
+  rangeEl.addEventListener("input", (e) => apply(e.target.value, numberEl));
 }
 
 function wireInputs() {
@@ -660,20 +677,8 @@ function wireInputs() {
     render(data, config);
     persistState();
   });
-  document.getElementById("input-width").addEventListener("input", (e) => {
-    const v = parseInt(e.target.value, 10);
-    if (isNaN(v) || v < 1) return;
-    config.width = v;
-    render(data, config);
-    persistState();
-  });
-  document.getElementById("input-plot-height").addEventListener("input", (e) => {
-    const v = parseInt(e.target.value, 10);
-    if (isNaN(v) || v < 1) return;
-    config.plotHeight = v;
-    render(data, config);
-    persistState();
-  });
+  wireDimension("input-width", "input-width-range", "width");
+  wireDimension("input-plot-height", "input-plot-height-range", "plotHeight");
   document.getElementById("input-title").addEventListener("input", (e) => {
     config.title = e.target.value;
     render(data, config);

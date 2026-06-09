@@ -7,210 +7,521 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700;6..72,800&display=swap" rel="stylesheet" />
     <style>
+      :root {
+        --panel: #eef0f1;
+        --surface: #f6f7f8;
+        --field: #ffffff;
+        --ink: #211c20;
+        --muted: #585a5f;
+        --faint: #a8a9ae;
+        --line: #cdd1d5;
+        --tick: #9aa0a6;
+        --red: #f1585c;
+        --amber: #d99a16;
+        --radius: 3px;
+        --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      }
       * {
         box-sizing: border-box;
       }
       body {
-        font-family: "IBM Plex Sans", sans-serif;
+        font-family: var(--sans);
         margin: 20px;
+        color: var(--ink);
+        background: #e7e9ea;
       }
       input,
       textarea,
       select,
       button {
-        font-family: "IBM Plex Sans", sans-serif;
-        font-size: 1rem;
-      }
-      label {
-        font-weight: 700;
-        display: block;
-        margin: 0 0 0.5rem 0;
+        font-family: var(--sans);
+        font-size: 0.8125rem;
+        color: var(--ink);
       }
       .layout {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
+        grid-template-columns: auto auto;
+        justify-content: start;
+        gap: 28px;
         align-items: start;
         margin: 20px 0;
       }
+
+      /* Chart "scale window": white inset in a light metal frame */
       .card {
-        padding: 20px;
-        border: 1px solid #000;
+        padding: 18px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 1px 2px rgba(33, 28, 32, 0.06), 0 6px 18px rgba(33, 28, 32, 0.08);
+      }
+      .stage {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
         position: sticky;
         top: 20px;
       }
+
+      /* Braun control panel */
       .controls {
-        width: 480px;
+        order: -1;
+        width: 380px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 1px 2px rgba(33, 28, 32, 0.06), 0 6px 18px rgba(33, 28, 32, 0.08);
+        overflow: hidden;
       }
-      .controls div {
-        margin: 1rem 0;
+
+      .group {
+        padding: 14px 16px;
+        border-top: 1px solid var(--line);
       }
-      .controls > div:first-child {
+      .group:first-of-type {
+        border-top: none;
+      }
+      .group-title {
+        margin: 0 0 12px 0;
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+      .field {
+        margin: 10px 0;
+      }
+      .field:first-child {
         margin-top: 0;
       }
+      .field:last-child {
+        margin-bottom: 0;
+      }
+      label {
+        display: block;
+        margin: 0 0 5px 0;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--muted);
+      }
+
+      /* Recessed "scale window" fields */
       input,
-      textarea {
+      textarea,
+      select {
         display: block;
         width: 100%;
+        background: var(--field);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 6px 8px;
+        box-shadow: inset 0 1px 2px rgba(33, 28, 32, 0.08);
+        transition: border-color 0.12s, box-shadow 0.12s;
       }
-      input[type="checkbox"] {
-        display: inline-block;
-        width: auto;
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--red);
+        box-shadow: inset 0 1px 2px rgba(33, 28, 32, 0.08),
+          0 0 0 3px rgba(241, 88, 92, 0.3);
       }
-      .checkbox-label {
-        font-weight: 400;
+      input:disabled,
+      select:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      textarea {
+        resize: vertical;
+      }
+      #input-data,
+      #input-source,
+      .series-color-hex {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+      }
+
+      /* Selects: hairline caret */
+      select {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 26px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23585a5f' stroke-width='1.2'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 9px center;
+      }
+
+      /* Numeric fields: tuning-scale under the value */
+      .field--num input {
+        font-family: var(--mono);
+        width: 7em;
+      }
+      /* Two controls sharing a row */
+      .field-row {
+        display: flex;
+        gap: 12px;
+        margin: 10px 0;
+      }
+      .field-row > .field {
+        flex: 1;
+        margin: 0;
+      }
+      .field-row--end {
+        align-items: flex-end;
+      }
+      .field-row--end > .field:has(.checkbox-label) {
+        flex: 0 0 auto;
+      }
+
+      /* Slider + numeric readout */
+      .range-row {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
       }
+      .range-row input[type="number"] {
+        width: 5em;
+        flex: 0 0 auto;
+        font-family: var(--mono);
+        background-image: none;
+      }
+      input[type="range"] {
+        flex: 1;
+        appearance: none;
+        -webkit-appearance: none;
+        height: 18px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        cursor: pointer;
+      }
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 3px;
+        background: var(--tick);
+        border-radius: 2px;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        margin-top: -7px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 38%, #fbfbfc, #dfe2e4);
+        border: 1px solid var(--tick);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9),
+          0 1px 1px rgba(33, 28, 32, 0.2);
+      }
+      input[type="range"]::-moz-range-track {
+        height: 3px;
+        background: var(--tick);
+        border-radius: 2px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #eef0f1;
+        border: 1px solid var(--tick);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9),
+          0 1px 1px rgba(33, 28, 32, 0.2);
+      }
+      input[type="range"]:focus {
+        outline: none;
+        box-shadow: none;
+      }
+      input[type="range"]:focus::-webkit-slider-thumb {
+        box-shadow: 0 0 0 3px rgba(241, 88, 92, 0.3);
+      }
+      input[type="range"]:focus::-moz-range-thumb {
+        box-shadow: 0 0 0 3px rgba(241, 88, 92, 0.3);
+      }
+
+      /* Knob / lamp toggles */
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 0.78rem;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 38%, #fbfbfc, #dfe2e4);
+        border: 1px solid var(--tick);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9),
+          0 1px 1px rgba(33, 28, 32, 0.15);
+        padding: 0;
+        cursor: pointer;
+        position: relative;
+      }
+      input[type="checkbox"]::after {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        background: var(--faint);
+        opacity: 0.4;
+      }
+      input[type="checkbox"]:checked::after {
+        background: var(--amber);
+        opacity: 1;
+        box-shadow: 0 0 4px rgba(217, 154, 22, 0.8);
+      }
+      input[type="checkbox"]:focus-visible {
+        outline: none;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9),
+          0 0 0 3px rgba(241, 88, 92, 0.3);
+      }
+      input[type="checkbox"]:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      /* Switch bank */
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        padding: 10px;
+      }
+      button {
+        padding: 6px 11px;
+        background: linear-gradient(to bottom, #fdfdfd, #e9ebec);
+        border: 1px solid var(--tick);
+        border-radius: var(--radius);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+          0 1px 1px rgba(33, 28, 32, 0.12);
+        font-size: 0.72rem;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+      }
+      button:hover {
+        background: linear-gradient(to bottom, #ffffff, #eef0f1);
+      }
+      button:active {
+        background: #e4e6e7;
+        box-shadow: inset 0 1px 3px rgba(33, 28, 32, 0.2);
+      }
+      button:focus-visible {
+        outline: none;
+        border-color: var(--red);
+        box-shadow: 0 0 0 3px rgba(241, 88, 92, 0.3);
+      }
+      .status {
+        font-size: 0.68rem;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+        color: var(--muted);
+        margin-left: 4px;
+      }
+
       [hidden] {
         display: none !important;
       }
+
+      /* Color knobs */
       .color-row {
         display: flex;
-        gap: 8px;
+        gap: 9px;
         align-items: center;
       }
       .series-color {
-        width: 48px;
-        padding: 0;
-        border: 1px solid #000;
+        width: 26px;
+        height: 26px;
         flex: 0 0 auto;
+        padding: 0;
+        border: 1px solid var(--tick);
+        border-radius: 50%;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6),
+          0 1px 1px rgba(33, 28, 32, 0.15);
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .series-color::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+      .series-color::-webkit-color-swatch {
+        border: none;
+        border-radius: 50%;
       }
       .series-color-hex {
         flex: 1;
       }
       #color-pickers > div {
-        margin: 1rem 0;
+        margin: 10px 0;
       }
-      #color-pickers .color-note {
-        margin: 1rem 0;
-        color: #6b7280;
-        font-size: 0.9rem;
+      #color-pickers > div:first-child {
+        margin-top: 0;
       }
+      #color-pickers .color-note,
       .loaded-filename {
-        font-weight: 400;
-        color: #374151;
-        font-size: 0.9rem;
-        margin: 0 0 0.5rem 0;
-      }
-      #input-bar-gap,
-      #input-tick-count,
-      #input-max-labels,
-      #input-line-width,
-      #input-width,
-      #input-plot-height {
-        width: 6em;
+        margin: 0 0 8px 0;
+        color: var(--muted);
+        font-size: 0.72rem;
       }
     </style>
   </head>
   <body>
     <div class="layout">
-      <div class="card">
-        <div id="chart"></div>
+      <div class="stage">
+        <div class="card">
+          <div id="chart"></div>
+        </div>
+        <div class="toolbar">
+          <button id="copy">Copy SVG</button>
+          <button id="download">Download .svg</button>
+          <button id="save-json">Save JSON</button>
+          <button id="load-json">Load JSON</button>
+          <button id="reset">Reset</button>
+          <input id="load-json-input" type="file" accept="application/json,.json" hidden />
+          <span class="status" id="status"></span>
+        </div>
       </div>
       <div class="controls">
-      <div class="toolbar">
-        <button id="copy">Copy SVG</button>
-        <button id="download">Download .svg</button>
-        <button id="save-json">Save JSON</button>
-        <button id="load-json">Load JSON</button>
-        <button id="reset">Reset</button>
-        <input id="load-json-input" type="file" accept="application/json,.json" hidden />
-        <span class="status" id="status"></span>
-      </div>
-      <div>
-        <label for="input-type">Chart type</label>
-        <select id="input-type">
-          <option value="bar">Bar</option>
-          <option value="line">Line</option>
-        </select>
-      </div>
-      <div>
-        <label for="input-orientation">Orientation</label>
-        <select id="input-orientation">
-          <option value="vertical">Vertical</option>
-          <option value="horizontal">Horizontal</option>
-        </select>
-      </div>
-      <div>
-        <label for="input-bar-gap">Bar gap (px)</label>
-        <input type="number" id="input-bar-gap" min="0" max="100" step="1" />
-      </div>
-      <div>
-        <label for="input-tick-count">Ticks</label>
-        <input type="number" id="input-tick-count" min="2" max="20" step="1" />
-      </div>
-      <div>
-        <label for="input-max-labels">Axis labels shown (0 = all, min first + last)</label>
-        <input type="number" id="input-max-labels" min="0" max="200" step="1" />
-      </div>
-      <div>
-        <label for="input-tick-label-format">Tick date format (d3 time spec, e.g. %Y; blank = raw)</label>
-        <input type="text" id="input-tick-label-format" placeholder="%Y" />
-      </div>
-      <div>
-        <label class="checkbox-label" for="input-show-dots">
-          <input type="checkbox" id="input-show-dots" />
-          Show data point dots (line charts)
-        </label>
-      </div>
-      <div>
-        <label for="input-line-width">Line thickness (px)</label>
-        <input type="number" id="input-line-width" min="0.5" max="12" step="0.5" />
-      </div>
-      <div>
-        <label class="checkbox-label" for="input-show-legend">
-          <input type="checkbox" id="input-show-legend" />
-          Show legend
-        </label>
-      </div>
-      <div>
-        <label for="input-legend-position">Legend position</label>
-        <select id="input-legend-position">
-          <option value="top-left">Top left</option>
-          <option value="top-right">Top right</option>
-          <option value="bottom-left">Bottom left</option>
-          <option value="bottom-right">Bottom right</option>
-        </select>
-      </div>
-      <div>
-        <label for="input-width">Chart width (px)</label>
-        <input type="number" id="input-width" min="100" max="2000" step="10" />
-      </div>
-      <div>
-        <label for="input-plot-height">Plot height (px)</label>
-        <input type="number" id="input-plot-height" min="50" max="2000" step="10" />
-      </div>
-      <div>
-        <label for="input-title">Title</label>
-        <input type="text" id="input-title" />
-      </div>
-      <div>
-        <label for="input-subtitle">Subtitle</label>
-        <input type="text" id="input-subtitle" />
-      </div>
-      <div>
-        <label for="input-source">Source (one line per row)</label>
-        <textarea id="input-source" rows="4"></textarea>
-      </div>
-      <div id="color-pickers"></div>
-      <div>
-        <label for="input-data-mode">Data input</label>
-        <select id="input-data-mode">
-          <option value="paste">Paste</option>
-          <option value="file">Upload file</option>
-        </select>
-      </div>
-      <div id="data-paste-wrapper">
-        <label for="input-data">Data (CSV or TSV)</label>
-        <textarea id="input-data" rows="12"></textarea>
-      </div>
-      <div id="data-file-wrapper" hidden>
-        <label for="input-data-file">CSV file</label>
-        <p id="loaded-filename" class="loaded-filename" hidden></p>
-        <input type="file" id="input-data-file" accept=".csv,.tsv,text/csv,text/tab-separated-values" />
-      </div>
+        <section class="group">
+          <h2 class="group-title">Data</h2>
+          <div class="field">
+            <label for="input-data-mode">Data input</label>
+            <select id="input-data-mode">
+              <option value="paste">Paste</option>
+              <option value="file">Upload file</option>
+            </select>
+          </div>
+          <div class="field" id="data-paste-wrapper">
+            <label for="input-data">Data (CSV or TSV)</label>
+            <textarea id="input-data" rows="12"></textarea>
+          </div>
+          <div class="field" id="data-file-wrapper" hidden>
+            <label for="input-data-file">CSV file</label>
+            <p id="loaded-filename" class="loaded-filename" hidden></p>
+            <input type="file" id="input-data-file" accept=".csv,.tsv,text/csv,text/tab-separated-values" />
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group-title">Text</h2>
+          <div class="field">
+            <label for="input-title">Title</label>
+            <input type="text" id="input-title" />
+          </div>
+          <div class="field">
+            <label for="input-subtitle">Subtitle</label>
+            <input type="text" id="input-subtitle" />
+          </div>
+          <div class="field">
+            <label for="input-source">Source (one line per row)</label>
+            <textarea id="input-source" rows="4"></textarea>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group-title">Chart</h2>
+          <div class="field-row">
+            <div class="field">
+              <label for="input-type">Chart type</label>
+              <select id="input-type">
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="input-orientation">Orientation</label>
+              <select id="input-orientation">
+                <option value="vertical">Vertical</option>
+                <option value="horizontal">Horizontal</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group-title">Size</h2>
+          <div class="field">
+            <label for="input-width">Chart width (px)</label>
+            <div class="range-row">
+              <input type="range" id="input-width-range" min="100" max="2000" step="10" />
+              <input type="number" id="input-width" min="100" max="2000" step="10" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="input-plot-height">Plot height (px)</label>
+            <div class="range-row">
+              <input type="range" id="input-plot-height-range" min="50" max="2000" step="10" />
+              <input type="number" id="input-plot-height" min="50" max="2000" step="10" />
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group-title">Bars &amp; lines</h2>
+          <div class="field field--num">
+            <label for="input-bar-gap">Bar gap (px)</label>
+            <input type="number" id="input-bar-gap" min="0" max="100" step="1" />
+          </div>
+          <div class="field">
+            <label class="checkbox-label" for="input-show-dots">
+              <input type="checkbox" id="input-show-dots" />
+              Show data point dots (line charts)
+            </label>
+          </div>
+          <div class="field field--num">
+            <label for="input-line-width">Line thickness (px)</label>
+            <input type="number" id="input-line-width" min="0.5" max="12" step="0.5" />
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group-title">Axes</h2>
+          <div class="field field--num">
+            <label for="input-tick-count">Ticks</label>
+            <input type="number" id="input-tick-count" min="2" max="20" step="1" />
+          </div>
+          <div class="field field--num">
+            <label for="input-max-labels">Axis labels shown (0 = all, min first + last)</label>
+            <input type="number" id="input-max-labels" min="0" max="200" step="1" />
+          </div>
+          <div class="field">
+            <label for="input-tick-label-format">Tick date format (d3 time spec, e.g. %Y; blank = raw)</label>
+            <input type="text" id="input-tick-label-format" placeholder="%Y" />
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group-title">Legend</h2>
+          <div class="field-row field-row--end">
+            <div class="field">
+              <label for="input-legend-position">Legend position</label>
+              <select id="input-legend-position">
+                <option value="top-left">Top left</option>
+                <option value="top-right">Top right</option>
+                <option value="bottom-left">Bottom left</option>
+                <option value="bottom-right">Bottom right</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="checkbox-label" for="input-show-legend">
+                <input type="checkbox" id="input-show-legend" />
+                Show legend
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group-title">Colors</h2>
+          <div id="color-pickers"></div>
+        </section>
       </div>
     </div>
 
