@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "config": {
+    "title": "The cost of happiness: Final",
+    "subtitle": "Men's football World Cup, cheapest tickets*, $, 2026 prices",
+    "source": [
+      "*Does not include discounted tickets offered to residents of host countries, or those resold",
+      "†No data available   ‡Less than 3% of tickets sold at this price",
+      "Sources: WorldCupGuide.com; FIFA"
+    ],
+    "colors": {
+      "Cheapest ticket": "#f1585c"
+    },
+    "chartType": "bar",
+    "orientation": "vertical",
+    "dataInputMode": "file",
+    "dataFileName": "worldcup-tickets-final.csv",
+    "width": 520,
+    "plotHeight": 300,
+    "marginTop": 64,
+    "marginRight": 0,
+    "marginLeft": 0,
+    "labelGutterPad": 8,
+    "barGap": 8,
+    "tickCount": 5,
+    "tickLabelFormat": "",
+    "showDots": false,
+    "lineWidth": 3,
+    "maxCategoryLabels": 5,
+    "showLegend": false,
+    "legendPosition": "top-left",
+    "fontFamily": "\"IBM Plex Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"
+  },
+  "dataFile": "data/worldcup-tickets-final.csv"
+}

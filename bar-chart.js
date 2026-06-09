@@ -40,8 +40,14 @@ if (restored) {
   Object.assign(config, restored.config);
   dataText = restored.csv;
 } else {
-  dataText = await fetch("./data.csv").then(r => r.text());
-  config.dataFileName = "data.csv";
+  try {
+    const preset = await fetch("./data/fifa-revenue-by-source.json").then(r => r.json());
+    Object.assign(config, preset.config);
+    dataText = await fetch(preset.dataFile).then(r => r.text());
+  } catch (_) {
+    dataText = await fetch("./data.csv").then(r => r.text());
+    config.dataFileName = "data.csv";
+  }
 }
 let data = parseData(dataText);
 render(data, config);

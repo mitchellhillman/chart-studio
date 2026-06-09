@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "config": {
+    "title": "Footing the bill",
+    "subtitle": "FIFA, revenue by source, $bn",
+    "source": [
+      "Source: FIFA",
+      "*Budget"
+    ],
+    "colors": {
+      "Broadcasting rights": "#f1585c",
+      "Hospitality and ticket sales": "#a8a9ae",
+      "Marketing rights": "#4369aa",
+      "Licensing and other": "#585a5f"
+    },
+    "chartType": "bar",
+    "orientation": "horizontal",
+    "dataInputMode": "file",
+    "dataFileName": "fifa-revenue-by-source.csv",
+    "width": 700,
+    "plotHeight": 300,
+    "marginTop": 64,
+    "marginRight": 0,
+    "marginLeft": 0,
+    "labelGutterPad": 8,
+    "barGap": 14,
+    "tickCount": 12,
+    "tickLabelFormat": "",
+    "showDots": false,
+    "lineWidth": 3,
+    "maxCategoryLabels": 0,
+    "showLegend": true,
+    "legendPosition": "top-right",
+    "fontFamily": "\"IBM Plex Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"
+  },
+  "dataFile": "data/fifa-revenue-by-source.csv"
+}
