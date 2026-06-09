@@ -9,6 +9,7 @@ const config = {
   colors: {},
   backgroundColor: "#ffffff",
   legendBackground: "#f5f5f5",
+  palette: "",
   chartType: "bar",
   orientation: "vertical",
   dataInputMode: "paste",
@@ -31,6 +32,14 @@ const config = {
 };
 
 const DEFAULT_PALETTE = ["#363537", "#0cce6b", "#dced31"];
+
+// Named palettes selectable from the Colors group. Mirror palettes/*.txt.
+const PALETTES = {
+  Economist: { series: ["#E3120B", "#F4A39E", "#7E9DC9", "#3B4BA0"], background: "#ffffff" },
+  "Economist warm": { series: ["#E3120B", "#F4A582", "#C2C2C2", "#575757"], background: "#E9E4DA" },
+  Monochrome: { series: ["#a8a9ae", "#585a5f", "#211c20", "#4369aa", "#f1585c"], background: "#ffffff" },
+};
+
 const AUTOSAVE_KEY = "barchart:autosave";
 // Reserved column name for per-row bar/dot colors. Holds a hex value
 // (with or without the leading "#"); excluded from the numeric series.
@@ -154,6 +163,19 @@ function ensureColors(series, cfg) {
   series.forEach((s, i) => {
     if (!cfg.colors[s]) cfg.colors[s] = DEFAULT_PALETTE[i % DEFAULT_PALETTE.length];
   });
+}
+
+function applyPalette(name) {
+  const pal = PALETTES[name];
+  if (!pal) return;
+  if (!config.colors) config.colors = {};
+  getSeries(data).forEach((s, i) => {
+    config.colors[s] = pal.series[i % pal.series.length];
+  });
+  if (pal.background) {
+    config.backgroundColor = pal.background;
+    config.legendBackground = pal.background;
+  }
 }
 
 function render(rows, cfg) {
@@ -617,6 +639,12 @@ function syncInputsFromState() {
   const legBg = config.legendBackground || "";
   document.getElementById("input-legend-bg").value = legBg || "#ffffff";
   document.getElementById("input-legend-bg-hex").value = legBg;
+  const paletteSelect = document.getElementById("input-palette");
+  if (!paletteSelect.options.length) {
+    paletteSelect.appendChild(new Option("Custom", ""));
+    for (const name of Object.keys(PALETTES)) paletteSelect.appendChild(new Option(name, name));
+  }
+  paletteSelect.value = config.palette || "";
   document.getElementById("input-data").value = dataText;
   const mode = config.dataInputMode ?? "paste";
   document.getElementById("input-data-mode").value = mode;
@@ -754,6 +782,13 @@ function wireInputs() {
     render(data, config);
     persistState();
   });
+  document.getElementById("input-palette").addEventListener("change", (e) => {
+    config.palette = e.target.value;
+    if (config.palette) applyPalette(config.palette);
+    syncInputsFromState();
+    render(data, config);
+    persistState();
+  });
   document.getElementById("input-data").addEventListener("input", (e) => {
     dataText = e.target.value;
     data = parseData(dataText);
@@ -799,6 +834,12 @@ function hasColorColumn(rows) {
   return !!rows?.columns?.some(c => c.toLowerCase() === COLOR_KEY);
 }
 
+function clearPaletteSelection() {
+  config.palette = "";
+  const sel = document.getElementById("input-palette");
+  if (sel) sel.value = "";
+}
+
 function renderColorPickers() {
   const container = document.getElementById("color-pickers");
   container.innerHTML = "";
@@ -835,6 +876,7 @@ function renderColorPickers() {
     colorInput.addEventListener("input", (e) => {
       config.colors[s] = e.target.value;
       hexInput.value = e.target.value;
+      clearPaletteSelection();
       render(data, config);
       persistState();
     });
@@ -843,6 +885,7 @@ function renderColorPickers() {
       if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) return;
       config.colors[s] = v;
       colorInput.value = v;
+      clearPaletteSelection();
       render(data, config);
       persistState();
     });
