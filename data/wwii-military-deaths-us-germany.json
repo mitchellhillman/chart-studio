@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "config": {
+    "title": "WWII Military Deaths US/Germany ",
+    "subtitle": "Military deaths by month",
+    "source": [
+      "Germany: Rüdiger Overmans, Wikipedia",
+      "United States: US Army Adjutant General, www.ibiblio.org"
+    ],
+    "colors": {
+      "Cheapest": "#363537",
+      "Mid-tier": "#0cce6b",
+      "Premium": "#dced31",
+      "KIA": "#363537",
+      "Europe": "#252429",
+      "Mediterranean": "#4b69aa",
+      "Pacific": "#ed4e51",
+      "Writers": "#363537",
+      "North Africa and Italy": "#0cce6b",
+      "Regular": "#363537",
+      "Diesel": "#0cce6b",
+      "United States": "#363537",
+      "Germany": "#0cce6b",
+      "Soviet Union": "#0cce6b",
+      "United Kingdom": "#363537"
+    },
+    "chartType": "line",
+    "orientation": "vertical",
+    "dataInputMode": "file",
+    "dataFileName": "ww2-military-deaths-monthly.csv",
+    "width": 600,
+    "plotHeight": 240,
+    "marginTop": 64,
+    "marginRight": 0,
+    "marginLeft": 0,
+    "labelGutterPad": 8,
+    "barGap": 8,
+    "tickCount": 5,
+    "tickLabelFormat": "%Y",
+    "showDots": false,
+    "lineWidth": 3,
+    "maxCategoryLabels": 0,
+    "showLegend": true,
+    "legendPosition": "top-left",
+    "fontFamily": "\"IBM Plex Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"
+  },
+  "csv": "label,United States,Germany\n1939-09,,15000\n1939-10,,3000\n1939-11,,1000\n1939-12,,\n1940-01,,2000\n1940-02,,\n1940-03,,5000\n1940-04,,3000\n1940-05,,21000\n1940-06,,29000\n1940-07,,7000\n1940-08,,4000\n1940-09,,4000\n1940-10,,5033\n1940-11,,1000\n1940-12,,2000\n1941-01,,10000\n1941-02,,1000\n1941-03,,4000\n1941-04,,4000\n1941-05,,13000\n1941-06,,29000\n1941-07,,67132\n1941-08,,51066\n1941-09,,53033\n1941-10,,44099\n1941-11,,38000\n1941-12,810,42198\n1942-01,947,53165\n1942-02,660,52099\n1942-03,1303,46132\n1942-04,662,24066\n1942-05,2746,44099\n1942-06,2777,34033\n1942-07,2389,46099\n1942-08,1477,74231\n1942-09,1380,46033\n1942-10,1414,30000\n1942-11,2501,38231\n1942-12,2478,83792\n1943-01,2651,185376\n1943-02,2556,74363\n1943-03,2390,59099\n1943-04,2800,21066\n1943-05,3292,31099\n1943-06,2624,21066\n1943-07,4872,79231\n1943-08,3974,66198\n1943-09,3351,69495\n1943-10,3678,61330\n1943-11,5216,77396\n1943-12,4234,66330\n1944-01,5691,81330\n1944-02,6724,91495\n1944-03,5717,112759\n1944-04,5905,92363\n1944-05,7745,78495\n1944-06,16268,182178\n1944-07,18910,215013\n1944-08,14538,348960\n1944-09,15469,151957\n1944-10,15029,184089\n1944-11,17569,103561\n1944-12,20257,159386\n1945-01,18097,451742\n1945-02,14995,294772\n1945-03,17830,284442\n1945-04,19085,281848\n1945-05,8136,94528\n1945-06,4837,\n1945-07,3233,\n1945-08,2568,\n1945-09,1994,\n1945-10,1832,\n1945-11,1554,\n1945-12,1719,\n"
+}

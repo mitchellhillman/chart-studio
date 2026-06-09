@@ -1,0 +1,32 @@
+SOURCES: ww2-us-deaths-by-theater-monthly.csv
+
+Metric: US Army military deaths per month, by theater (all causes, all death
+types combined). US Army and Army Air Forces only. Excludes US Navy and Marine
+Corps. Monthly is the finest granularity available.
+
+Theater mapping:
+  Europe                -> European Theater (ETO): NW Europe from Normandy on
+  North Africa and Italy -> Mediterranean Theater (MTO): N. Africa, Sicily,
+                            Salerno, Anzio, Italian campaign, southern France
+  Pacific               -> consolidated Pacific theaters (excludes CBI)
+
+Primary source:
+  "Army Battle Casualties and Nonbattle Deaths in World War II, Final Report,
+  7 December 1941 - 31 December 1946." US Adjutant General's Office, 1953.
+  Deaths-by-month-by-theater tables ("All Army deaths in Air Corps and all
+  other branches, by month and type of death").
+
+  HyperWar (deaths section):
+    https://www.ibiblio.org/hyperwar/USA/ref/Casualties/Casualties-2.html
+  Report index:
+    https://www.ibiblio.org/hyperwar/USA/ref/Casualties/index.html
+  DTIC full PDF:
+    https://apps.dtic.mil/sti/tr/pdf/ADA438106.pdf
+
+Notes:
+- The report has no monthly cross-tab of battle CASUALTIES by theater; monthly
+  deaths by theater is the only true month-by-theater series it contains.
+- The series begins 1941-12, the only 1941 month (Pacific 506; Europe and
+  North Africa/Italy effectively 0).
+- The report also lists a small separate "Africa-Middle East Theater" (rear
+  area) not folded into the figures here.

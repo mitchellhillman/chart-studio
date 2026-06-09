@@ -88,6 +88,12 @@
         color: #6b7280;
         font-size: 0.9rem;
       }
+      .loaded-filename {
+        font-weight: 400;
+        color: #374151;
+        font-size: 0.9rem;
+        margin: 0 0 0.5rem 0;
+      }
       #input-bar-gap,
       #input-tick-count,
       #input-max-labels,
@@ -138,6 +144,10 @@
       <div>
         <label for="input-max-labels">Axis labels shown (0 = all, min first + last)</label>
         <input type="number" id="input-max-labels" min="0" max="200" step="1" />
+      </div>
+      <div>
+        <label for="input-tick-label-format">Tick date format (d3 time spec, e.g. %Y; blank = raw)</label>
+        <input type="text" id="input-tick-label-format" placeholder="%Y" />
       </div>
       <div>
         <label class="checkbox-label" for="input-show-dots">
@@ -198,6 +208,7 @@
       </div>
       <div id="data-file-wrapper" hidden>
         <label for="input-data-file">CSV file</label>
+        <p id="loaded-filename" class="loaded-filename" hidden></p>
         <input type="file" id="input-data-file" accept=".csv,.tsv,text/csv,text/tab-separated-values" />
       </div>
       </div>

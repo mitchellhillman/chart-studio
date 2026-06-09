@@ -10,6 +10,7 @@ const config = {
   chartType: "bar",
   orientation: "vertical",
   dataInputMode: "paste",
+  dataFileName: "",
   width: 400,
   plotHeight: 232,
   marginTop: 64,
@@ -18,6 +19,7 @@ const config = {
   labelGutterPad: 8,
   barGap: 8,
   tickCount: 5,
+  tickLabelFormat: "",
   showDots: true,
   lineWidth: 3,
   maxCategoryLabels: 0,
@@ -39,6 +41,7 @@ if (restored) {
   dataText = restored.csv;
 } else {
   dataText = await fetch("./data.csv").then(r => r.text());
+  config.dataFileName = "data.csv";
 }
 let data = parseData(dataText);
 render(data, config);
@@ -96,6 +99,46 @@ function thinLabels(rows, cfg) {
     idx.add(Math.round((i * (n - 1)) / (target - 1)));
   }
   return [...idx].sort((a, b) => a - b).map(i => rows[i]);
+}
+
+function parseLabelDate(label) {
+  const s = String(label).trim();
+  if (!s) return null;
+  const iso = /^\d{4}$/.test(s) ? s + "-01-01"
+    : /^\d{4}-\d{2}$/.test(s) ? s + "-01"
+    : s;
+  const t = Date.parse(iso);
+  return isNaN(t) ? null : new Date(t);
+}
+
+function formatLabel(label, cfg) {
+  const fmt = cfg.tickLabelFormat?.trim();
+  if (!fmt) return String(label);
+  const d = parseLabelDate(label);
+  if (!d) return String(label);
+  try {
+    return d3.utcFormat(fmt)(d);
+  } catch (_) {
+    return String(label);
+  }
+}
+
+// Rows that get an axis tick + label. With a date format set, collapse rows
+// that format to the same value to their first (earliest) occurrence — so for
+// monthly data formatted as years, the tick sits on January, the year's start.
+function labelRowsFor(rows, cfg) {
+  if (cfg.tickLabelFormat?.trim()) {
+    const seen = new Set();
+    const out = [];
+    for (const r of rows) {
+      const f = formatLabel(r.label, cfg);
+      if (seen.has(f)) continue;
+      seen.add(f);
+      out.push(r);
+    }
+    return thinLabels(out, cfg);
+  }
+  return thinLabels(rows, cfg);
 }
 
 function ensureColors(series, cfg) {
@@ -232,7 +275,8 @@ function drawLegend(svg, series, cfg, availableWidth, innerHeight) {
 function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
   const series = getSeries(rows);
   ensureColors(series, cfg);
-  const labelRows = thinLabels(rows, cfg);
+  const labelRows = labelRowsFor(rows, cfg);
+  const fmtActive = !!cfg.tickLabelFormat?.trim();
 
   const stackedData = cfg.chartType === "bar"
     ? d3.stack().keys(series)(rows.map(r => ({ ...r, ...Object.fromEntries(series.map(s => [s, r[s] ?? 0])) })))
@@ -257,6 +301,21 @@ function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
     .paddingInner(paddingInner)
     .paddingOuter(paddingInner / 2);
 
+  // Drop a partial leading/trailing period label (e.g. data starting in
+  // mid-1939) that would overlap its neighbor; full interior periods are
+  // evenly spaced and never collide.
+  let tickRows = labelRows;
+  if (fmtActive && labelRows.length >= 2) {
+    const cx = r => x(r.label) + x.bandwidth() / 2;
+    const labelW = measureMaxTextWidth(labelRows.map(r => formatLabel(r.label, cfg)), cfg);
+    tickRows = labelRows.slice();
+    if (cx(tickRows[1]) - cx(tickRows[0]) < labelW * 1.5) tickRows = tickRows.slice(1);
+    const n = tickRows.length;
+    if (n >= 2 && cx(tickRows[n - 1]) - cx(tickRows[n - 2]) < labelW * 1.5) {
+      tickRows = tickRows.slice(0, n - 1);
+    }
+  }
+
   const plot = svg.append("g")
     .attr("transform", `translate(${cfg.marginLeft}, ${cfg.marginTop})`);
 
@@ -270,8 +329,6 @@ function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
       .attr("y2", d => y(d))
       .attr("stroke", "#d1d5db")
       .attr("stroke-width", 1);
-
-  const totallyMissing = rows.filter(r => series.every(s => r[s] == null || isNaN(r[s])));
 
   if (cfg.chartType === "line") {
     for (const s of series) {
@@ -315,17 +372,6 @@ function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
   }
 
   plot.append("g")
-    .selectAll("text.missing")
-    .data(totallyMissing)
-    .join("text")
-      .attr("class", "missing")
-      .attr("x", d => x(d.label) + x.bandwidth() / 2)
-      .attr("y", innerHeight - 4)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#111827")
-      .text("†");
-
-  plot.append("g")
     .selectAll("text.tick")
     .data(ticks)
     .join("text")
@@ -339,7 +385,7 @@ function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
 
   plot.append("g")
     .selectAll("line.xtick")
-    .data(labelRows)
+    .data(tickRows)
     .join("line")
       .attr("class", "xtick")
       .attr("x1", d => x(d.label) + x.bandwidth() / 2)
@@ -351,21 +397,22 @@ function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
 
   plot.append("g")
     .selectAll("text.label")
-    .data(labelRows)
+    .data(tickRows)
     .join("text")
       .attr("class", "label")
       .attr("x", (d, i) =>
-        i === 0 ? 0
-        : i === labelRows.length - 1 ? barsEnd
+        fmtActive ? x(d.label) + x.bandwidth() / 2
+        : i === 0 ? 0
+        : i === tickRows.length - 1 ? barsEnd
         : x(d.label) + x.bandwidth() / 2)
       .attr("y", innerHeight + 18)
       .attr("text-anchor", (d, i) =>
         i === 0 ? "start"
-        : i === labelRows.length - 1 ? "end"
+        : i === tickRows.length - 1 ? "end"
         : "middle")
       .attr("font-weight", 500)
       .attr("fill", "#111827")
-      .text(d => d.label);
+      .text(d => formatLabel(d.label, cfg));
 
   plot.append("line")
     .attr("x1", 0)
@@ -379,7 +426,7 @@ function drawVertical(svg, rows, cfg, availableWidth, innerHeight) {
 function drawHorizontal(svg, rows, cfg, availableWidth, innerHeight) {
   const series = getSeries(rows);
   ensureColors(series, cfg);
-  const labelRows = thinLabels(rows, cfg);
+  const labelRows = labelRowsFor(rows, cfg);
 
   const stackedData = cfg.chartType === "bar"
     ? d3.stack().keys(series)(rows.map(r => ({ ...r, ...Object.fromEntries(series.map(s => [s, r[s] ?? 0])) })))
@@ -418,8 +465,6 @@ function drawHorizontal(svg, rows, cfg, availableWidth, innerHeight) {
       .attr("y2", innerHeight)
       .attr("stroke", "#d1d5db")
       .attr("stroke-width", 1);
-
-  const totallyMissing = rows.filter(r => series.every(s => r[s] == null || isNaN(r[s])));
 
   if (cfg.chartType === "line") {
     for (const s of series) {
@@ -463,17 +508,6 @@ function drawHorizontal(svg, rows, cfg, availableWidth, innerHeight) {
   }
 
   plot.append("g")
-    .selectAll("text.missing")
-    .data(totallyMissing)
-    .join("text")
-      .attr("class", "missing")
-      .attr("x", 4)
-      .attr("y", d => y(d.label) + y.bandwidth() / 2)
-      .attr("dy", "0.35em")
-      .attr("fill", "#111827")
-      .text("†");
-
-  plot.append("g")
     .selectAll("text.tick")
     .data(ticks)
     .join("text")
@@ -508,7 +542,7 @@ function drawHorizontal(svg, rows, cfg, availableWidth, innerHeight) {
       .attr("text-anchor", "end")
       .attr("font-weight", 500)
       .attr("fill", "#111827")
-      .text(d => d.label);
+      .text(d => formatLabel(d.label, cfg));
 
   plot.append("line")
     .attr("x1", 0)
@@ -519,6 +553,18 @@ function drawHorizontal(svg, rows, cfg, availableWidth, innerHeight) {
     .attr("stroke-width", 1);
 }
 
+function updateLoadedFilename() {
+  const el = document.getElementById("loaded-filename");
+  const name = config.dataFileName;
+  if (name) {
+    el.textContent = "Loaded: " + name;
+    el.hidden = false;
+  } else {
+    el.textContent = "";
+    el.hidden = true;
+  }
+}
+
 function syncInputsFromState() {
   document.getElementById("input-type").value = config.chartType;
   document.getElementById("input-orientation").value = config.orientation;
@@ -526,6 +572,7 @@ function syncInputsFromState() {
   barGapInput.value = config.barGap;
   barGapInput.disabled = config.chartType !== "bar";
   document.getElementById("input-tick-count").value = config.tickCount;
+  document.getElementById("input-tick-label-format").value = config.tickLabelFormat ?? "";
   document.getElementById("input-max-labels").value = config.maxCategoryLabels ?? 0;
   const showDotsInput = document.getElementById("input-show-dots");
   showDotsInput.checked = config.showDots !== false;
@@ -545,6 +592,7 @@ function syncInputsFromState() {
   document.getElementById("input-data-mode").value = mode;
   document.getElementById("data-paste-wrapper").hidden = mode !== "paste";
   document.getElementById("data-file-wrapper").hidden = mode !== "file";
+  updateLoadedFilename();
   renderColorPickers();
 }
 
@@ -575,6 +623,11 @@ function wireInputs() {
     const v = parseInt(e.target.value, 10);
     if (isNaN(v) || v < 2) return;
     config.tickCount = v;
+    render(data, config);
+    persistState();
+  });
+  document.getElementById("input-tick-label-format").addEventListener("input", (e) => {
+    config.tickLabelFormat = e.target.value;
     render(data, config);
     persistState();
   });
@@ -639,6 +692,8 @@ function wireInputs() {
   document.getElementById("input-data").addEventListener("input", (e) => {
     dataText = e.target.value;
     data = parseData(dataText);
+    config.dataFileName = "";
+    updateLoadedFilename();
     renderColorPickers();
     render(data, config);
     persistState();
@@ -659,6 +714,8 @@ function wireInputs() {
       const text = await file.text();
       dataText = text;
       data = parseData(dataText);
+      config.dataFileName = file.name;
+      updateLoadedFilename();
       document.getElementById("input-data").value = dataText;
       renderColorPickers();
       render(data, config);
