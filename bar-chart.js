@@ -818,7 +818,9 @@ function wireToolbar() {
   });
 
   document.getElementById("save-json").addEventListener("click", () => {
-    const payload = { version: 1, config, csv: dataText };
+    const payload = config.dataInputMode === "file" && config.dataFileName
+      ? { version: 1, config, dataFile: "data/" + config.dataFileName }
+      : { version: 1, config, csv: dataText };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -839,12 +841,20 @@ function wireToolbar() {
     try {
       const text = await file.text();
       const parsed = JSON.parse(text);
-      if (!parsed || typeof parsed !== "object" || typeof parsed.csv !== "string" || !parsed.config) {
-        throw new Error("Missing config or csv field");
+      const hasCsv = typeof parsed?.csv === "string";
+      const hasDataFile = typeof parsed?.dataFile === "string";
+      if (!parsed || typeof parsed !== "object" || !parsed.config || (!hasCsv && !hasDataFile)) {
+        throw new Error("Missing config, or csv/dataFile field");
+      }
+      if (hasDataFile) {
+        const res = await fetch(parsed.dataFile);
+        if (!res.ok) throw new Error("Could not fetch " + parsed.dataFile);
+        dataText = await res.text();
+      } else {
+        dataText = parsed.csv;
       }
       for (const k of Object.keys(config)) delete config[k];
       Object.assign(config, parsed.config);
-      dataText = parsed.csv;
       data = parseData(dataText);
       syncInputsFromState();
       render(data, config);

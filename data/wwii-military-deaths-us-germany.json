@@ -8,21 +8,8 @@
       "United States: US Army Adjutant General, www.ibiblio.org"
     ],
     "colors": {
-      "Cheapest": "#363537",
-      "Mid-tier": "#0cce6b",
-      "Premium": "#dced31",
-      "KIA": "#363537",
-      "Europe": "#252429",
-      "Mediterranean": "#4b69aa",
-      "Pacific": "#ed4e51",
-      "Writers": "#363537",
-      "North Africa and Italy": "#0cce6b",
-      "Regular": "#363537",
-      "Diesel": "#0cce6b",
-      "United States": "#363537",
-      "Germany": "#0cce6b",
-      "Soviet Union": "#0cce6b",
-      "United Kingdom": "#363537"
+      "United States": "#4369aa",
+      "Germany": "#f1585c"
     },
     "chartType": "line",
     "orientation": "vertical",
