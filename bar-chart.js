@@ -41,9 +41,54 @@ const PALETTES = {
 };
 
 const AUTOSAVE_KEY = "barchart:autosave";
+// Custom palettes the user has saved, persisted independently of the per-chart
+// autosave so they're reusable across charts and sessions.
+const CUSTOM_PALETTES_KEY = "barchart:palettes";
 // Reserved column name for per-row bar/dot colors. Holds a hex value
 // (with or without the leading "#"); excluded from the numeric series.
 const COLOR_KEY = "color";
+
+function readCustomPalettes() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_PALETTES_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function loadCustomPalettes() {
+  // Merge persisted custom palettes into PALETTES, without clobbering built-ins.
+  const store = readCustomPalettes();
+  for (const [name, pal] of Object.entries(store)) {
+    if (!PALETTES[name]) PALETTES[name] = pal;
+  }
+}
+
+function saveCustomPalette(name) {
+  const series = getSeries(data).map((s) => config.colors[s]).filter(Boolean);
+  if (!series.length) return false;
+  const pal = { series, background: config.backgroundColor };
+  PALETTES[name] = pal; // available immediately this session
+  const store = readCustomPalettes();
+  store[name] = pal; // persist across reloads
+  try {
+    localStorage.setItem(CUSTOM_PALETTES_KEY, JSON.stringify(store));
+  } catch (err) {
+    console.warn("Saving palette failed:", err);
+  }
+  return true;
+}
+
+function populatePaletteSelect() {
+  const sel = document.getElementById("input-palette");
+  const current = config.palette || "";
+  sel.innerHTML = "";
+  sel.appendChild(new Option("Custom", ""));
+  for (const name of Object.keys(PALETTES)) sel.appendChild(new Option(name, name));
+  sel.value = current;
+}
 
 let dataText;
 const restored = restoreState();
@@ -61,6 +106,7 @@ if (restored) {
   }
 }
 let data = parseData(dataText);
+loadCustomPalettes();
 render(data, config);
 wireToolbar();
 wireInputs();
@@ -639,12 +685,7 @@ function syncInputsFromState() {
   const legBg = config.legendBackground || "";
   document.getElementById("input-legend-bg").value = legBg || "#ffffff";
   document.getElementById("input-legend-bg-hex").value = legBg;
-  const paletteSelect = document.getElementById("input-palette");
-  if (!paletteSelect.options.length) {
-    paletteSelect.appendChild(new Option("Custom", ""));
-    for (const name of Object.keys(PALETTES)) paletteSelect.appendChild(new Option(name, name));
-  }
-  paletteSelect.value = config.palette || "";
+  populatePaletteSelect();
   document.getElementById("input-font").value = config.fontFamily;
   document.getElementById("input-data").value = dataText;
   const mode = config.dataInputMode ?? "paste";
@@ -793,6 +834,19 @@ function wireInputs() {
   document.getElementById("input-font").addEventListener("change", (e) => {
     config.fontFamily = e.target.value;
     render(data, config);
+    persistState();
+  });
+  document.getElementById("btn-save-palette").addEventListener("click", () => {
+    const nameEl = document.getElementById("input-palette-name");
+    const name = nameEl.value.trim();
+    if (!name) {
+      nameEl.focus();
+      return;
+    }
+    if (!saveCustomPalette(name)) return; // nothing to save (no series colors)
+    config.palette = name; // select the just-saved palette
+    populatePaletteSelect();
+    nameEl.value = "";
     persistState();
   });
   document.getElementById("input-data").addEventListener("input", (e) => {

@@ -377,6 +377,12 @@
       .series-color-hex {
         flex: 1;
       }
+      #save-palette-row .color-row input {
+        flex: 1;
+      }
+      #save-palette-row .color-row button {
+        flex: 0 0 auto;
+      }
       #color-pickers > div {
         margin: 10px 0;
       }
@@ -569,6 +575,13 @@
             </div>
           </div>
           <div id="color-pickers"></div>
+          <div class="field" id="save-palette-row">
+            <label for="input-palette-name">Save palette</label>
+            <div class="color-row">
+              <input type="text" id="input-palette-name" placeholder="Palette name" />
+              <button type="button" id="btn-save-palette">Save</button>
+            </div>
+          </div>
         </section>
 
         <section class="group">
