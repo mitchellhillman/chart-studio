@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -36,6 +38,7 @@ jobs:
           npm run build
 
       - name: Assemble Pages site (legacy at root, app at /app)
+        if: github.event_name != 'pull_request'
         run: |
           mkdir -p _site/app
           cp index.html bar-chart.js data.csv _site/
@@ -43,11 +46,15 @@ jobs:
           cp -r app/dist/. _site/app/
 
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
           path: _site
 
+  # Deploy only for pushes to main; on pull requests the build job alone runs
+  # as a lint/test/build check.
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
