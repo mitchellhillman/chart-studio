@@ -1,0 +1,14 @@
+.field {
+  margin: 10px 0;
+}
+.field:first-child {
+  margin-top: 0;
+}
+.field:last-child {
+  margin-bottom: 0;
+}
+.help {
+  margin: 5px 0 0 0;
+  color: var(--faint);
+  font-size: 0.68rem;
+}

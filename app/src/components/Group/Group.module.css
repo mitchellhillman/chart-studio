@@ -1,0 +1,15 @@
+.group {
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.group:first-of-type {
+  border-top: none;
+}
+.title {
+  margin: 0 0 12px 0;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--faint);
+}

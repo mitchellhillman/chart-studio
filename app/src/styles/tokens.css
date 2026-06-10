@@ -1,0 +1,16 @@
+:root {
+  --panel: #eef0f1;
+  --surface: #f6f7f8;
+  --field: #ffffff;
+  --ink: #211c20;
+  --muted: #585a5f;
+  --faint: #a8a9ae;
+  --line: #cdd1d5;
+  --tick: #9aa0a6;
+  --red: #f1585c;
+  --amber: #d99a16;
+  --blue: #4369aa;
+  --radius: 3px;
+  --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}

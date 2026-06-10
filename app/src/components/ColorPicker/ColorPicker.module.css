@@ -1,0 +1,32 @@
+.row {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+.swatch {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+  overflow: hidden;
+  cursor: pointer;
+}
+.swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.swatch::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+.swatch::-moz-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+.hex {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}

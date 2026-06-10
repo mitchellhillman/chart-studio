@@ -1,0 +1,25 @@
+.layout {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: start;
+  gap: 28px;
+  margin: 24px 20px;
+}
+
+.error {
+  margin: 0 0 8px 0;
+  color: var(--red);
+  font-size: 0.7rem;
+  white-space: pre-wrap;
+}
+
+.warning {
+  margin: 0 0 8px 0;
+  color: var(--amber);
+  font-size: 0.7rem;
+}
+
+.colorRow {
+  margin: 10px 0;
+}

@@ -1,0 +1,12 @@
+.row {
+  display: flex;
+  gap: 12px;
+  margin: 10px 0;
+}
+.row > * {
+  flex: 1;
+  margin: 0;
+}
+.end {
+  align-items: flex-end;
+}

@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "kind": "gantt",
+  "config": {
+    "title": "Presidents: lifespans & terms in office",
+    "subtitle": "Each row spans a life; the inset bar marks time in office",
+    "source": ["Source: Wikipedia"],
+    "axis": "date",
+    "tickInterval": 25,
+    "categoryColors": {
+      "Lifespan": "#E2E4E7",
+      "In office": "#21409A",
+      "Still living": "#A3C2E3"
+    },
+    "rowHeight": 22,
+    "rowGap": 1,
+    "width": 900,
+    "showLegend": true,
+    "legendPosition": "top-left",
+    "showTopAxis": true,
+    "showBottomAxis": true
+  },
+  "data": {
+    "rows": [
+      {
+        "label": "George Washington",
+        "segments": [
+          { "start": "1732-02-22", "end": "1799-12-14", "category": "Lifespan" },
+          { "start": "1789-04-30", "end": "1797-03-04", "category": "In office" }
+        ]
+      },
+      {
+        "label": "John Adams",
+        "segments": [
+          { "start": "1735-10-30", "end": "1826-07-04", "category": "Lifespan" },
+          { "start": "1797-03-04", "end": "1801-03-04", "category": "In office" }
+        ]
+      },
+      {
+        "label": "Thomas Jefferson",
+        "segments": [
+          { "start": "1743-04-13", "end": "1826-07-04", "category": "Lifespan" },
+          { "start": "1801-03-04", "end": "1809-03-04", "category": "In office" }
+        ]
+      },
+      {
+        "label": "Abraham Lincoln",
+        "segments": [
+          { "start": "1809-02-12", "end": "1865-04-15", "category": "Lifespan" },
+          { "start": "1861-03-04", "end": "1865-04-15", "category": "In office" }
+        ]
+      },
+      {
+        "label": "Grover Cleveland",
+        "segments": [
+          { "start": "1837-03-18", "end": "1908-06-24", "category": "Lifespan" },
+          { "start": "1885-03-04", "end": "1889-03-04", "category": "In office" },
+          { "start": "1893-03-04", "end": "1897-03-04", "category": "In office" }
+        ]
+      },
+      {
+        "label": "Franklin D. Roosevelt",
+        "segments": [
+          { "start": "1882-01-30", "end": "1945-04-12", "category": "Lifespan" },
+          { "start": "1933-03-04", "end": "1945-04-12", "category": "In office" }
+        ]
+      },
+      {
+        "label": "John F. Kennedy",
+        "segments": [
+          { "start": "1917-05-29", "end": "1963-11-22", "category": "Lifespan" },
+          { "start": "1961-01-20", "end": "1963-11-22", "category": "In office" }
+        ]
+      },
+      {
+        "label": "Ronald Reagan",
+        "segments": [
+          { "start": "1911-02-06", "end": "2004-06-05", "category": "Lifespan" },
+          { "start": "1981-01-20", "end": "1989-01-20", "category": "In office" }
+        ]
+      },
+      {
+        "label": "George W. Bush",
+        "segments": [
+          { "start": "1946-07-06", "category": "Still living" },
+          { "start": "2001-01-20", "end": "2009-01-20", "category": "In office" }
+        ]
+      },
+      {
+        "label": "Barack Obama",
+        "segments": [
+          { "start": "1961-08-04", "category": "Still living" },
+          { "start": "2009-01-20", "end": "2017-01-20", "category": "In office" }
+        ]
+      },
+      {
+        "label": "Joe Biden",
+        "segments": [
+          { "start": "1942-11-20", "category": "Still living" },
+          { "start": "2021-01-20", "end": "2025-01-20", "category": "In office" }
+        ]
+      }
+    ]
+  }
+}
