@@ -1,4 +1,12 @@
-import { detectAxisType, niceYearStep, numericTickCount, parseLabelDate, formatLabel } from './dates'
+import {
+  detectAxisType,
+  niceYearStep,
+  numericTickCount,
+  parseLabelDate,
+  formatLabel,
+  thinLabels,
+  labelRowsFor,
+} from './dates'
 import type { GanttModel } from './ganttDoc'
 
 const model = (segments: { start: string | number; end?: string | number }[]): GanttModel => ({
@@ -58,5 +66,27 @@ describe('numericTickCount', () => {
     expect(numericTickCount(900)).toBe(10)
     expect(numericTickCount(100)).toBe(4)
     expect(numericTickCount(5000)).toBe(12)
+  })
+})
+
+describe('thinLabels', () => {
+  const rows = Array.from({ length: 10 }, (_, i) => ({ label: i }))
+  it('keeps everything when max is 0 or >= count', () => {
+    expect(thinLabels(rows, 0)).toHaveLength(10)
+    expect(thinLabels(rows, 99)).toHaveLength(10)
+  })
+  it('keeps an evenly spaced subset including first and last', () => {
+    const out = thinLabels(rows, 3)
+    expect(out[0].label).toBe(0)
+    expect(out[out.length - 1].label).toBe(9)
+    expect(out.length).toBeLessThanOrEqual(3)
+  })
+})
+
+describe('labelRowsFor', () => {
+  it('collapses rows that format to the same value', () => {
+    const rows = [{ label: '1939-09' }, { label: '1939-10' }, { label: '1940-01' }]
+    const out = labelRowsFor(rows, { tickLabelFormat: '%Y' })
+    expect(out.map((r) => r.label)).toEqual(['1939-09', '1940-01'])
   })
 })

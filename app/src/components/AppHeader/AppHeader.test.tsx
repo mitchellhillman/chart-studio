@@ -22,8 +22,8 @@ describe('AppHeader', () => {
     expect(screen.getByRole('link', { name: 'Gantt' })).toHaveAttribute('aria-current', 'page')
   })
 
-  it('points Bar/Line at the legacy site', () => {
-    renderAt('/gantt')
-    expect(screen.getByRole('link', { name: 'Bar/Line' })).toHaveAttribute('href', '../')
+  it('marks the Bar/Line link active on the bar route', () => {
+    renderAt('/bar')
+    expect(screen.getByRole('link', { name: 'Bar/Line' })).toHaveAttribute('aria-current', 'page')
   })
 })

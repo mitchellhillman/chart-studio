@@ -9,6 +9,12 @@ export interface DataRow {
   [series: string]: string | number | null | undefined
 }
 
+// Numeric series keys (every column except the reserved label/color).
+export function getSeries(rows: DataRow[]): string[] {
+  if (!rows.length) return []
+  return Object.keys(rows[0]).filter((k) => k !== 'label' && k !== 'color')
+}
+
 // Legacy CSV/TSV parser, kept for the later bar/line port.
 export function parseData(text: string): DataRow[] {
   const firstLine = text.split('\n').find((l) => l.trim().length > 0) ?? ''

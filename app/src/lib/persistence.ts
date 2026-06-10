@@ -43,3 +43,46 @@ export function clearGantt(): void {
     /* ignore */
   }
 }
+
+export const BAR_AUTOSAVE_KEY = 'bar:autosave'
+
+export interface PersistedBarDoc {
+  config: Record<string, unknown>
+  csv: string
+}
+
+export function persistBar(config: Record<string, unknown>, csv: string): void {
+  try {
+    localStorage.setItem(BAR_AUTOSAVE_KEY, JSON.stringify({ version: 1, kind: 'bar', config, csv }))
+  } catch (err) {
+    console.warn('Autosave failed:', err)
+  }
+}
+
+export function restoreBar(): PersistedBarDoc | null {
+  let raw: string | null
+  try {
+    raw = localStorage.getItem(BAR_AUTOSAVE_KEY)
+  } catch {
+    return null
+  }
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object' || !parsed.config || typeof parsed.csv !== 'string') {
+      return null
+    }
+    return { config: parsed.config, csv: parsed.csv }
+  } catch (err) {
+    console.warn('Autosave parse failed, ignoring:', err)
+    return null
+  }
+}
+
+export function clearBar(): void {
+  try {
+    localStorage.removeItem(BAR_AUTOSAVE_KEY)
+  } catch {
+    /* ignore */
+  }
+}

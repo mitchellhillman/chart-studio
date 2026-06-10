@@ -18,4 +18,5 @@ export default meta
 type Story = StoryObj<typeof AppHeader>
 
 export const GanttActive: Story = { parameters: { route: '/gantt' } }
+export const BarActive: Story = { parameters: { route: '/bar' } }
 export const NeitherActive: Story = { parameters: { route: '/other' } }
