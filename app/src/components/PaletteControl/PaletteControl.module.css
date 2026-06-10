@@ -1,0 +1,20 @@
+.saveRow {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin-top: 10px;
+}
+.saveRow input {
+  flex: 1;
+}
+.saveRow button {
+  flex: 0 0 auto;
+}
+.label {
+  display: block;
+  margin: 0 0 5px 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}

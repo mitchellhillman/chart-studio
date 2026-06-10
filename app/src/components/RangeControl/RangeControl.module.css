@@ -1,0 +1,11 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.number {
+  width: 5em;
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  background-image: none;
+}
