@@ -645,6 +645,7 @@ function syncInputsFromState() {
     for (const name of Object.keys(PALETTES)) paletteSelect.appendChild(new Option(name, name));
   }
   paletteSelect.value = config.palette || "";
+  document.getElementById("input-font").value = config.fontFamily;
   document.getElementById("input-data").value = dataText;
   const mode = config.dataInputMode ?? "paste";
   document.getElementById("input-data-mode").value = mode;
@@ -786,6 +787,11 @@ function wireInputs() {
     config.palette = e.target.value;
     if (config.palette) applyPalette(config.palette);
     syncInputsFromState();
+    render(data, config);
+    persistState();
+  });
+  document.getElementById("input-font").addEventListener("change", (e) => {
+    config.fontFamily = e.target.value;
     render(data, config);
     persistState();
   });
